@@ -1,5 +1,5 @@
-const CACHE='urlaub26-v09';
-const CORE=['./','./index.html','./manifest.json','./icon.svg','https://unpkg.com/leaflet@1.9.4/dist/leaflet.css','https://unpkg.com/leaflet@1.9.4/dist/leaflet.js'];
+const CACHE='urlaub26-v10';
+const CORE=['./','./index.html','./style.css','./app.js','./manifest.json','./icon.svg','https://unpkg.com/leaflet@1.9.4/dist/leaflet.css','https://unpkg.com/leaflet@1.9.4/dist/leaflet.js','https://unpkg.com/@supabase/supabase-js@2'];
 self.addEventListener('install',e=>{e.waitUntil(caches.open(CACHE).then(c=>c.addAll(CORE)).then(()=>self.skipWaiting()))});
 self.addEventListener('activate',e=>{e.waitUntil(caches.keys().then(keys=>Promise.all(keys.filter(k=>k!==CACHE).map(k=>caches.delete(k)))).then(()=>self.clients.claim()))});
-self.addEventListener('fetch',e=>{const req=e.request;if(req.method!=='GET')return;e.respondWith(caches.match(req).then(hit=>hit||fetch(req).then(res=>{const copy=res.clone();try{const u=new URL(req.url);if(req.url.includes('tile.openstreetmap.org')||req.url.includes('unpkg.com')||u.origin===location.origin){caches.open(CACHE).then(c=>c.put(req,copy)).catch(()=>{})}}catch(e){}return res}).catch(()=>caches.match('./index.html'))))});
+self.addEventListener('fetch',e=>{if(e.request.method!=='GET')return;e.respondWith(caches.match(e.request).then(hit=>hit||fetch(e.request).then(res=>{const copy=res.clone();caches.open(CACHE).then(c=>c.put(e.request,copy)).catch(()=>{});return res}).catch(()=>caches.match('./index.html'))))});
